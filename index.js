@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 require('dotenv').config();
 require('./db');
+require('./models/User');
 const authRoutes = require('./routes/authRouter');
 const port = process.env.PORT || 4000;
 app.use(bodyParser.json());
