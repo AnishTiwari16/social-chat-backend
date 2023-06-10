@@ -47,7 +47,11 @@ router.post('/verify', (req, res) => {
 
                 return res
                     .status(200)
-                    .send({ message: 'Email sent', VerificationCode, email });
+                    .send({
+                        message: 'Verification code sent to your email',
+                        VerificationCode,
+                        email,
+                    });
             } catch (err) {
                 return res.status(422).send({ error: 'Error sending email' });
             }
