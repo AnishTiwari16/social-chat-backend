@@ -31,57 +31,66 @@ async function mailer(recieveremail, code) {
 
 router.post('/verify', (req, res) => {
     const { email } = req.body;
-
     if (!email) {
-        return res.status(422).json({ error: 'Please enter email' });
+        return res
+            .status(422)
+            .send({ error: true, message: 'Please enter email' });
     } else {
         User.findOne({ email: email }).then(async (savedUser) => {
             if (savedUser) {
-                return res.status(422).send({ error: 'Invalid Credentials' });
+                return res
+                    .status(422)
+                    .send({ error: true, message: 'Email already registered' });
             }
             try {
                 let VerificationCode = Math.floor(
                     100000 + Math.random() * 900000
                 );
-                await mailer(email, VerificationCode);
+                await mailer(email, VerificationCode); //wait here
 
                 return res.status(200).send({
-                    message: 'Verification code sent to your email',
                     VerificationCode,
                     email,
                 });
             } catch (err) {
-                return res.status(422).send({ error: 'Error sending email' });
+                return res.status(422).send({
+                    error: true,
+                    message: 'Please enter valid email address',
+                });
             }
         });
     }
 });
-router.post('/changeusername', (req, res) => {
-    const { username } = req.body;
+router.post('/checkusername', (req, res) => {
+    const { email, username } = req.body;
+    if (!username) {
+        return res
+            .status(422)
+            .send({ error: true, message: 'Please enter username' });
+    }
     User.find({ username }).then(async (savedUsername) => {
         if (savedUsername.length > 0) {
-            return res.status(422).send({ error: 'Username already exists' });
-        } else {
             return res
-                .status(200)
-                .send({ message: 'Username available', username });
+                .status(422)
+                .send({ error: true, message: 'Username already exists' });
+        } else {
+            return res.status(200).send({ email, username });
         }
     });
 });
 router.post('/signup', async (req, res) => {
     const { email, username, password } = req.body;
-    if (!email || !username || !password) {
-        return res.status(422).send({ error: 'Please enter all the fields' });
-    } else {
-        const user = new User({ username, email, password });
-        try {
-            await user.save();
-            //save the user to the db
-            const token = jwt.sign({_id: user._id}, process.env.JWT_SECRET);
-            return res.status(200).send({message: 'User registered successfully', token})
-        } catch (err) {
-            return res.status(422).send({error: err})
-        }
+
+    const user = new User({ username, email, password });
+    try {
+        await user.save();
+        //save the user to the db
+        const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
+        return res
+            .status(200)
+            .send({ message: 'User registered successfully', token });
+    } catch (err) {
+        return res.status(422).send({ error: err });
     }
 });
 module.exports = router;
