@@ -49,6 +49,7 @@ router.post('/verify', (req, res) => {
                 await mailer(email, VerificationCode); //wait here
 
                 return res.status(200).send({
+                    error: false,
                     VerificationCode,
                     email,
                 });
@@ -88,7 +89,7 @@ router.post('/signup', async (req, res) => {
         const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
         return res
             .status(200)
-            .send({ message: 'User registered successfully', token });
+            .send({ message: 'Registration successfull', token });
     } catch (err) {
         return res.status(422).send({ error: err });
     }
