@@ -30,14 +30,14 @@ async function mailer(recieveremail, code) {
 }
 
 router.post('/verify', (req, res) => {
-    const { email } = req.body;
+    const { email, screen } = req.body;
     if (!email) {
         return res
             .status(422)
             .send({ error: true, message: 'Please enter email' });
     } else {
         User.findOne({ email: email }).then(async (savedUser) => {
-            if (savedUser) {
+            if (savedUser && screen === 'verifyOtp') {
                 return res
                     .status(422)
                     .send({ error: true, message: 'Email already registered' });
