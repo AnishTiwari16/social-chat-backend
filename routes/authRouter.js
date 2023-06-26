@@ -62,6 +62,40 @@ router.post('/verify', (req, res) => {
         });
     }
 });
+router.post('/verifyfp', (req, res) => {
+    const { email } = req.body;
+    if (!email) {
+        return res
+            .status(422)
+            .send({ error: true, message: 'Please enter email' });
+    } else {
+        User.findOne({ email: email }).then(async (savedUser) => {
+            if (savedUser) {
+                try {
+                    let VerificationCode = Math.floor(
+                        100000 + Math.random() * 900000
+                    );
+                    await mailer(email, VerificationCode); //wait here
+
+                    return res.status(200).send({
+                        error: false,
+                        VerificationCode,
+                        email,
+                    });
+                } catch (err) {
+                    return res.status(422).send({
+                        error: true,
+                        message: 'Please enter valid email address',
+                    });
+                }
+            } else {
+                return res
+                    .status(422)
+                    .send({ error: true, message: 'Invalid credentials' });
+            }
+        });
+    }
+});
 router.post('/checkusername', (req, res) => {
     const { email, username } = req.body;
     if (!username) {
