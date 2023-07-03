@@ -28,9 +28,7 @@ async function mailer(recieveremail, code) {
 
     console.log(info);
 }
-router.get('/test', (req, res) => {
-    res.send('testing is working fine, LGTM');
-});
+
 router.post('/verify', (req, res) => {
     const { email, screen } = req.body;
     if (!email) {
